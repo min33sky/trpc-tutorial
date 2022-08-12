@@ -29,7 +29,11 @@ export default withTRPC<AppRouter>({
   config({ ctx }) {
     //? Debug에 유용한 Link들을 추가
     const links = [
-      loggerLink(),
+      loggerLink({
+        enabled: (opts) =>
+          process.env.NODE_ENV === 'development' ||
+          (opts.direction === 'down' && opts.result instanceof Error),
+      }),
       httpBatchLink({
         maxBatchSize: 10,
         url,
@@ -57,5 +61,5 @@ export default withTRPC<AppRouter>({
       transformer: superjson,
     };
   },
-  ssr: false,
+  ssr: true,
 })(MyApp);
